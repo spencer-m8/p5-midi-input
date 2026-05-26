@@ -1,47 +1,23 @@
+/*
+ * @name Load and Display Image
+ * @arialabel An astronaut on a planet with the same image in a smaller size in the bottom left quarter
+ * @description Images can be loaded and displayed to the screen at their
+ * actual size or any other size.
+ * <p><em><span class="small"> To run this example locally, you will need an 
+ * image file, and a running <a href="https://github.com/processing/p5.js/wiki/Local-server">
+ * local server</a>.</span></em></p>
 
-let symmetry = 2;
-let angle = 360/symmetry;
+ */
+let img; // Declare variable 'img'.
 
 function setup() {
-    describe(
-        `Dark grey canvas that reflects the lines drawn within it in ${symmetry} sections.`
-    );
-    createCanvas(720, 400);
-    angleMode(DEGREES);
-    background(50);
+  createCanvas(720, 400);
+  img = loadImage('/assets/Cat03.jpg'); // Load the image
 }
 
-
 function draw() {
-    // Move the 0,0 coordinates of the canvas to the center, instead of in
-    // the top left corner.
-    translate(width / 2, height / 2);
-
-    // If the cursor is within the limits of the canvas...
-    if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height) {
-        // Translate the current position and the previous position of the
-        // cursor to the new coordinates set with the translate() function above.
-        let lineStartX = mouseX - width / 2;
-        let lineStartY = mouseY - height / 2;
-        let lineEndX = pmouseX - width / 2;
-        let lineEndY = pmouseY - height / 2;
-
-        // And, if the mouse is pressed while in the canvas...
-        if (mouseIsPressed === true) {
-            // For every reflective section the canvas is split into, draw the cursor's
-            // coordinates while pressed...
-            for (let i = 0; i < symmetry; i++) {
-                rotate(angle);
-                stroke(255);
-                strokeWeight(3);
-                line(lineStartX, lineStartY, lineEndX, lineEndY);
-
-                // ... and reflect the line within the symmetry sections as well.
-                push();
-                scale(1, -1);
-                line(lineStartX, lineStartY, lineEndX, lineEndY);
-                pop();
-            }
-        }
-    }
+  // Displays the image at its actual size at point (0,0)
+  image(img, 0, 0);
+  // Displays the image at point (0, height/2) at half size
+  image(img, 0, height / 2, img.width / 2, img.height / 2);
 }
