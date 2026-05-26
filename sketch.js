@@ -1,28 +1,47 @@
+
+let symmetry = 2;
+let angle = 360/symmetry;
+
 function setup() {
-    createCanvas(800, 600);
+    describe(
+        `Dark grey canvas that reflects the lines drawn within it in ${symmetry} sections.`
+    );
+    createCanvas(720, 400);
+    angleMode(DEGREES);
+    background(50);
 }
 
-let number = 0;
-let x = 0;
-let y = 0;
-let oldX = 0;
-let oldY = 0;
-
-let lineCoords = [];
 
 function draw() {
-    background(220);
-    oldX = x;
-    oldY = y;
-    x = mouseX;
-    y = mouseY;
-    lineCoords.push([oldX, oldY, x, y])
-    for (let i = 0; i < lineCoords.length; i++) {
-        line(lineCoords[i][0], lineCoords[i][1], lineCoords[i][2], lineCoords[i][3]);
+    // Move the 0,0 coordinates of the canvas to the center, instead of in
+    // the top left corner.
+    translate(width / 2, height / 2);
+
+    // If the cursor is within the limits of the canvas...
+    if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height) {
+        // Translate the current position and the previous position of the
+        // cursor to the new coordinates set with the translate() function above.
+        let lineStartX = mouseX - width / 2;
+        let lineStartY = mouseY - height / 2;
+        let lineEndX = pmouseX - width / 2;
+        let lineEndY = pmouseY - height / 2;
+
+        // And, if the mouse is pressed while in the canvas...
+        if (mouseIsPressed === true) {
+            // For every reflective section the canvas is split into, draw the cursor's
+            // coordinates while pressed...
+            for (let i = 0; i < symmetry; i++) {
+                rotate(angle);
+                stroke(255);
+                strokeWeight(3);
+                line(lineStartX, lineStartY, lineEndX, lineEndY);
+
+                // ... and reflect the line within the symmetry sections as well.
+                push();
+                scale(1, -1);
+                line(lineStartX, lineStartY, lineEndX, lineEndY);
+                pop();
+            }
+        }
     }
-
-}
-
-function mousePressed() {
-    removeElements();
 }
