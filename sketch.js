@@ -1,28 +1,37 @@
+let output;// output to send things to other file
+let frequency;
+
 function setup() {
-    createCanvas(800, 600);
+    WebMidi
+  .enable()
+  .then(onEnabled)
+  .catch(err => alert(err));
 }
 
-let number = 0;
-let x = 0;
-let y = 0;
-let oldX = 0;
-let oldY = 0;
+function onEnabled() {
+  //WebMIDI Example Output Setup:
+  
+  console.log("WebMIDI Enabled");
+  
+  // Inputs
+  WebMidi.inputs.forEach(input => console.log("Input: ",input.manufacturer, input.name));
+  
+  // Outputs
+  WebMidi.outputs.forEach(output => console.log("Output: ",output.manufacturer, output.name));
+  
+  //Looking at the first output available to us
+  console.log(WebMidi.outputs[0]);
 
-let lineCoords = [];
+  //assign that output as the one we will use later
+  myOutput = WebMidi.outputs[0];
+}
+let random;
 
 function draw() {
-    background(220);
-    oldX = x;
-    oldY = y;
-    x = mouseX;
-    y = mouseY;
-    lineCoords.push([oldX, oldY, x, y])
-    for (let i = 0; i < lineCoords.length; i++) {
-        line(lineCoords[i][0], lineCoords[i][1], lineCoords[i][2], lineCoords[i][3]);
+    if ((frequency % 60) == 0) {
+        random = random(10, 90);
+        myOutput.playNote(random, {duration: 200});
+        console.log(random);
     }
-
-}
-
-function mousePressed() {
-    removeElements();
+    frequency++;
 }
