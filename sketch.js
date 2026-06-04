@@ -1,4 +1,6 @@
 let theShader;
+
+//const synth = new Tone.Synth().toDestination();
 // Vertex shader: Handles the geometry layout on the screen
 const vert = `
   precision highp float; // Use high precision for floating point numbers
@@ -128,6 +130,7 @@ function parseMidiDevices(midi) {
   if (midiInputs) {
     // listen for midi input
     midiInputs.onmidimessage = (msg) => {
+        console.log(msg.data);
       // get data from MIDI message
       cmd = msg.data[0] >> 4;
       pitch = msg.data[1];
@@ -138,6 +141,7 @@ function parseMidiDevices(midi) {
 }
 
 function draw() {
+    //synth.triggerAttackRelease(pitch, "8n");
   //background(colors[pitch % colors.length]);
   fill(0);
   shader(theShader); // Tell p5.js to use this specific shader
@@ -174,7 +178,9 @@ function draw() {
     opacity = map(t, 73.5, 78.5, 1.0, 0.0); // Fade out over the final 5 seconds
   }
 
-  loopSeed = pitch;
+  loopSeed = pitch;//make it flash, 
+  //send midi info into some sort of proccessing here
+  //using uniforms that are imported into the frag and vert parts of the shader
 
   // Set the uniform values to be sent to the GPU
   theShader.setUniform("u_resolution", [width, height]); // Send canvas dimensions
