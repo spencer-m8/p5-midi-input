@@ -1,37 +1,58 @@
-let output;// output to send things to other file
-let frequency;
+var midiOutputs;
+var midiInputs;
+var deviceName;
+var cmd;
+var pitch = '';
+var velocity = '';
+const NOTE_ON = 9;
+const NOTE_OFF = 8;
+
+var colors = ['#ff00ff', '#ffff00', '#00ffff'];
 
 function setup() {
-    WebMidi
-  .enable()
-  .then(onEnabled)
-  .catch(err => alert(err));
+  createCanvas(400, 400);
+  startMIDI();
 }
 
-function onEnabled() {
-  //WebMIDI Example Output Setup:
-  
-  console.log("WebMIDI Enabled");
-  
-  // Inputs
-  WebMidi.inputs.forEach(input => console.log("Input: ",input.manufacturer, input.name));
-  
-  // Outputs
-  WebMidi.outputs.forEach(output => console.log("Output: ",output.manufacturer, output.name));
-  
-  //Looking at the first output available to us
-  console.log(WebMidi.outputs[0]);
-
-  //assign that output as the one we will use later
-  myOutput = WebMidi.outputs[0];
+function startMIDI() {
+  // load MIDI devices and watch for hardware changes
+  if (!('requestMIDIAccess' in navigator)) {
+    print('This browser doesn\'t support WebMIDI');
+  } else {
+    navigator.requestMIDIAccess().then((midi) => {
+      parseMidiDevices(midi);
+      midi.onstatechange = (e) => parseMidiDevices(e.target);
+    });
+  }
 }
-let random;
+
+function parseMidiDevices(midi) {
+    //adding different midi inputs! this could be something
+  // grab first MIDI device.
+  // needs more code to support multiples
+  midiInputs = midi.inputs.values().next().value;
+  print(midiInputs);
+  midiOutputs = midi.outputs.values().next().value;
+  deviceInName = midiInputs.name;
+
+  if (midiInputs) {
+    // listen for midi input
+    midiInputs.onmidimessage = (msg) => {
+      // get data from MIDI message
+      cmd = msg.data[0] >> 4;
+      pitch = msg.data[1];
+      velocity = (msg.data.length > 2) ? msg.data[2] : 0;
+    };
+  }
+  //here automatically updates midi info given into variables
+}
 
 function draw() {
-    if ((frequency % 60) == 0) {
-        random = random(10, 90);
-        myOutput.playNote(random, {duration: 200});
-        console.log(random);
-    }
-    frequency++;
+  background(colors[pitch % colors.length]);
+  fill(0);
+  text(
+    // 'Device: ' + deviceInName + '\n' +
+    'Command: ' + ((cmd == NOTE_ON) ? "NOTE_ON" : "NOTE_OFF") + '\n' +
+    'Pitch: ' + pitch + '\n' +
+    'Velocity: ' + velocity + '\n', 10, 20);
 }
