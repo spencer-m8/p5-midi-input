@@ -10,8 +10,9 @@ const NOTE_OFF = 8;
 var colors = ['#ff00ff', '#ffff00', '#00ffff'];
 
 function setup() {
-  createCanvas(400, 400);
+  createCanvas(400, 400, WEBGL);
   startMIDI();
+  pixelDensity(1); // Set pixel density to 1 for consistent rendering
 }
 
 function startMIDI() {
